@@ -34,7 +34,7 @@ public class Boid : MonoBehaviour
         _acceleration += separation;
 
         // 4) Обработка границ области симуляции
-        HandleBounds();
+        _acceleration += HandleBounds();
 
         // Ограничиваем силу (чтобы маневры были гладкие)
         _acceleration = Vector3.ClampMagnitude(_acceleration, maxForce);
@@ -150,10 +150,10 @@ public class Boid : MonoBehaviour
         return steering;
     }
     
-    private void HandleBounds()
+    private Vector3 HandleBounds()
     {
         if (manager == null) 
-            return;
+            return Vector3.zero;
 
         var center = manager.transform.position;
         var radius = manager.boundsRadius;
@@ -161,11 +161,13 @@ public class Boid : MonoBehaviour
 
         var offset = pos - center;
         var dist = offset.magnitude;
-        if (dist > radius * 0.9f)
-        {
-            var desired = (center - pos).normalized * maxSpeed;
-            var steer = (desired - velocity) * manager.boundsAvoidanceWeight;
-            _acceleration += steer; // прямо добавляем к acceleration (учтётся дальше)
-        }
+        
+        if (!(dist > radius * 0.9f)) 
+            return Vector3.zero;
+        
+        var desired = (center - pos).normalized * maxSpeed;
+        var steer = (desired - velocity) * manager.boundsAvoidanceWeight;
+        return steer;
+
     }
 }
