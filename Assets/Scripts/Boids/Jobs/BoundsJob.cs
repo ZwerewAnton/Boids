@@ -1,18 +1,20 @@
 using Boids.Struct;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace Boids.Jobs
 {
+    [BurstCompile]
     public struct BoundsJob : IJobParallelFor
     {
         [ReadOnly]
-        public NativeArray<Vector3> Positions;
+        public NativeArray<float3> Positions;
         [ReadOnly]
-        public NativeArray<Vector3> Velocities;
+        public NativeArray<float3> Velocities;
         [WriteOnly]
-        public NativeArray<Vector3> BoundsAccelerations;
+        public NativeArray<float3> BoundsAccelerations;
         [ReadOnly]
         public BoundsParameters BoundsParameters;
         [ReadOnly]
@@ -25,12 +27,12 @@ namespace Boids.Jobs
             var position = Positions[index];
 
             var offset = position - center;
-            var distance2 = offset.sqrMagnitude;
-            var limit2 = radius * radius * 0.9f * 0.9f;
-            var steer = Vector3.zero;
-            if (distance2 > limit2)
+            var distanceSq = math.lengthsq(offset);
+            var limitSq = radius * radius * 0.9f * 0.9f;
+            var steer = float3.zero;
+            if (distanceSq > limitSq)
             {
-                var desired = (center - position).normalized * MaxSpeed;
+                var desired = math.normalizesafe(center - position) * MaxSpeed;
                 steer = (desired - Velocities[index]) * BoundsParameters.BoundsAvoidanceWeight;
             }
             BoundsAccelerations[index] = steer;

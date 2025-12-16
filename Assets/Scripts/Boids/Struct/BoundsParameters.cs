@@ -1,4 +1,4 @@
-using UnityEngine;
+using Unity.Mathematics;
 
 namespace Boids.Struct
 {
@@ -6,6 +6,6 @@ namespace Boids.Struct
     {
         public float BoundsRadius;
         public float BoundsAvoidanceWeight;
-        public Vector3 BoundsCenter;
+        public float3 BoundsCenter;
     }
 }

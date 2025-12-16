@@ -1,9 +1,8 @@
-using System;
-using System.Collections.Generic;
 using Boids.Jobs;
 using Boids.Struct;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Jobs;
 using Random = UnityEngine.Random;
@@ -45,10 +44,10 @@ namespace Boids
         private BoundsParameters _boundsParameters;
         private FlockingParameters _flockingParameters;
         
-        private NativeArray<Vector3> _positions;
-        private NativeArray<Vector3> _velocities;
-        private NativeArray<Vector3> _boundsAccelerations;
-        private NativeArray<Vector3> _steeringAccelerations;
+        private NativeArray<float3> _positions;
+        private NativeArray<float3> _velocities;
+        private NativeArray<float3> _boundsAccelerations;
+        private NativeArray<float3> _steeringAccelerations;
         private TransformAccessArray _transformAccessArray;
 
         private void Start()
@@ -121,10 +120,10 @@ namespace Boids
 
         private void InitializeDataStructs(Transform[] transforms)
         {
-            _positions = new NativeArray<Vector3>(numberOfBoids, Allocator.Persistent);
-            _velocities = new NativeArray<Vector3>(numberOfBoids, Allocator.Persistent);
-            _boundsAccelerations = new NativeArray<Vector3>(numberOfBoids, Allocator.Persistent);
-            _steeringAccelerations = new NativeArray<Vector3>(numberOfBoids, Allocator.Persistent);
+            _positions = new NativeArray<float3>(numberOfBoids, Allocator.Persistent);
+            _velocities = new NativeArray<float3>(numberOfBoids, Allocator.Persistent);
+            _boundsAccelerations = new NativeArray<float3>(numberOfBoids, Allocator.Persistent);
+            _steeringAccelerations = new NativeArray<float3>(numberOfBoids, Allocator.Persistent);
             _transformAccessArray = new TransformAccessArray(transforms);
 
             _boundsParameters = new BoundsParameters

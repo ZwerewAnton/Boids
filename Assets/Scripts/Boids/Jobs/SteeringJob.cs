@@ -1,36 +1,44 @@
 using Boids.Struct;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
-using UnityEngine;
+using Unity.Mathematics;
+using Utils;
 
 namespace Boids.Jobs
 {
+    [BurstCompile(
+        FloatMode = FloatMode.Fast,
+        FloatPrecision = FloatPrecision.Low
+    )]
     public struct SteeringJob : IJobParallelFor
     {
         [ReadOnly]
-        public NativeArray<Vector3> Positions;
+        public NativeArray<float3> Positions;
         [ReadOnly]
-        public NativeArray<Vector3> Velocities;
+        public NativeArray<float3> Velocities;
         [WriteOnly]
-        public NativeArray<Vector3> SteeringAccelerations;
+        public NativeArray<float3> SteeringAccelerations;
         public FlockingParameters FlockingParameters;
         public float MaxSpeed;
         public float MaxForce;
         
+        private const float Epsilon = 0.0001f;
+        
         public void Execute(int index)
         {
             var perceptionRadius = FlockingParameters.PerceptionRadius;
-            var acceleration = Vector3.zero;
+            var acceleration = float3.zero;
             var position = Positions[index];
             var velocity = Velocities[index];
             var perceptionRadius2 = perceptionRadius * perceptionRadius;
             var neighborsCount = 0;
             
-            var alignmentAverageVelocity = Vector3.zero;
+            var alignmentAverageVelocity = float3.zero;
             
-            var cohesionCenter = Vector3.zero;
+            var cohesionCenter = float3.zero;
             
-            var separationSteer = Vector3.zero;
+            var separationSteer = float3.zero;
             var avoidCount = 0;
             var desiredSeparation = perceptionRadius * 0.5f;
             var desiredSeparation2 = desiredSeparation * desiredSeparation;
@@ -39,7 +47,7 @@ namespace Boids.Jobs
             {
                 if (i == index)
                     continue;
-                if ((Positions[i] - position).sqrMagnitude > perceptionRadius2)
+                if (math.lengthsq(Positions[i] - position) > perceptionRadius2)
                     continue;
 
                 neighborsCount++;
@@ -52,7 +60,7 @@ namespace Boids.Jobs
                 
                 //Separation
                 var diff = position - Positions[i];
-                var d2 = diff.sqrMagnitude;
+                var d2 = math.lengthsq(diff);
                 if (d2 > 0 && d2 < desiredSeparation2)
                 {
                     separationSteer += diff / d2;
@@ -62,7 +70,7 @@ namespace Boids.Jobs
 
             if (neighborsCount == 0)
             {
-                SteeringAccelerations[index] = Vector3.zero;
+                SteeringAccelerations[index] = float3.zero;
                 return;
             }
 
@@ -81,37 +89,37 @@ namespace Boids.Jobs
                 acceleration += ComputeSeparation(separationSteer, velocity, MaxSpeed) * FlockingParameters.SeparationWeight;
             }
 
-            acceleration = Vector3.ClampMagnitude(acceleration, MaxForce);
+            acceleration = MathUtils.ClampMagnitude(acceleration, MaxForce);
             SteeringAccelerations[index] = acceleration;
         }
 
-        private static Vector3 ComputeAlignment(Vector3 averageVelocity, Vector3 boidVelocity, float maxSpeed)
+        private static float3 ComputeAlignment(float3 averageVelocity, float3 boidVelocity, float maxSpeed)
         {
-            if (averageVelocity.sqrMagnitude < Mathf.Epsilon) 
-                return Vector3.zero;
+            if (math.lengthsq(averageVelocity) < Epsilon) 
+                return float3.zero;
             
-            var desired = averageVelocity.normalized * maxSpeed;
+            var desired = math.normalizesafe(averageVelocity) * maxSpeed;
             var steering = desired - boidVelocity;
             return steering;
         }
         
-        private static Vector3 ComputeCohesion(Vector3 center, Vector3 boidVelocity,  Vector3 boidPosition, float maxSpeed)
+        private static float3 ComputeCohesion(float3 center, float3 boidVelocity,  float3 boidPosition, float maxSpeed)
         {
             var desired = (center - boidPosition);
-            if (desired.sqrMagnitude < Mathf.Epsilon) 
-                return Vector3.zero;
+            if (math.lengthsq(desired) < Epsilon) 
+                return float3.zero;
 
-            desired = desired.normalized * maxSpeed;
+            desired = math.normalizesafe(desired) * maxSpeed;
             var steering = desired - boidVelocity;
             return steering;
         }
 
-        private static Vector3 ComputeSeparation(Vector3 steer, Vector3 boidVelocity, float maxSpeed)
+        private static float3 ComputeSeparation(float3 steer, float3 boidVelocity, float maxSpeed)
         {
-            if (steer.sqrMagnitude < Mathf.Epsilon) 
-                return Vector3.zero;
+            if (math.lengthsq(steer) < Epsilon) 
+                return float3.zero;
 
-            var desired = steer.normalized * maxSpeed;
+            var desired = math.normalizesafe(steer) * maxSpeed;
             var steering = desired - boidVelocity;
             return steering;
         }
