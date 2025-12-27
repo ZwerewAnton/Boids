@@ -1,11 +1,11 @@
 using DOTS.Boids.Components;
+using DOTS.Boids.Components.Parameters;
 using DOTS.Boids.Components.Boid;
 using DOTS.Boids.Jobs;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace DOTS.Boids.Systems
 {
@@ -17,7 +17,6 @@ namespace DOTS.Boids.Systems
             state.RequireForUpdate<MovementParameters>();
             state.RequireForUpdate<FlockingParameters>();
             state.RequireForUpdate<SpatialHash>();
-            state.RequireForUpdate<SpatialHashJobHandle>();
         }
 
         [BurstCompile]
@@ -46,10 +45,7 @@ namespace DOTS.Boids.Systems
                 CellToBoid = spatial.ValueRW.CellToBoid.AsParallelWriter()
             };
 
-            var hashJobHandle = job.Schedule(
-                spatial.ValueRO.BoidCount,
-                64,
-                state.Dependency);
+            var hashJobHandle = job.Schedule(spatial.ValueRO.BoidCount, 64, state.Dependency);
             
             var movementParameters = SystemAPI.GetSingleton<MovementParameters>();
             var flockingParameters = SystemAPI.GetSingleton<FlockingParameters>();
@@ -58,6 +54,7 @@ namespace DOTS.Boids.Systems
             var steeringJob = new SteeringJob
             {
                 Positions = spatialHash.Positions,
+                Velocities = spatialHash.Velocities,
                 CellToBoid = spatialHash.CellToBoid,
                 CellSize = flockingParameters.PerceptionRadius,
                 FlockingParameters = flockingParameters,

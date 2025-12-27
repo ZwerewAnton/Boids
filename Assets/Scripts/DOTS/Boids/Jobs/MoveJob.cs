@@ -1,10 +1,9 @@
-using DOTS.Boids.Components;
+using Common.Utils;
 using DOTS.Boids.Components.Boid;
+using DOTS.Boids.Components.Parameters;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
-using Utils;
 
 namespace DOTS.Boids.Jobs
 {
@@ -34,7 +33,7 @@ namespace DOTS.Boids.Jobs
 
             if (math.lengthsq(velocity.Value) > Epsilon)
             {
-                transform.Rotation = quaternion.LookRotationSafe(
+                transform.Rotation = quaternion.LookRotationSafe( 
                     math.normalizesafe(velocity.Value),
                     math.up()
                 );

@@ -1,5 +1,5 @@
-using Boids.Jobs;
-using Boids.Struct;
+using Burst.Boids.Jobs;
+using Burst.Boids.Struct;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Jobs;
 using Random = UnityEngine.Random;
 
-namespace Boids
+namespace Burst.Boids
 {
     public class BoidsSimulation : MonoBehaviour
     {

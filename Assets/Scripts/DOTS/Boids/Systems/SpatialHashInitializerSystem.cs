@@ -1,4 +1,5 @@
 using DOTS.Boids.Components;
+using DOTS.Boids.Components.Parameters;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -37,7 +38,6 @@ namespace DOTS.Boids.Systems
                 CellToBoid = new NativeParallelMultiHashMap<int, int>(movement.Count * 2, Allocator.Persistent),
                 BoidCount = 0
             });
-            state.EntityManager.AddComponentData(entity, new SpatialHashJobHandle());
 
             state.Enabled = false;
         }

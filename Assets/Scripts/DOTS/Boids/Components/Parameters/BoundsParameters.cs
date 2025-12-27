@@ -1,7 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DOTS.Boids.Components
+namespace DOTS.Boids.Components.Parameters
 {
     public struct BoundsParameters : IComponentData
     {

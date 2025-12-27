@@ -1,11 +1,11 @@
+using Common.Utils;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Jobs;
-using Utils;
 
-namespace Boids.Jobs
+namespace Burst.Boids.Jobs
 {
     [BurstCompile]
     public struct MoveJob : IJobParallelForTransform

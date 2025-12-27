@@ -1,10 +1,10 @@
-using DOTS.Boids.Components;
+using Common.Utils;
+using DOTS.Boids.Components.Parameters;
 using DOTS.Boids.Components.Boid;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using Utils;
 
 namespace DOTS.Boids.Jobs
 {
@@ -12,20 +12,18 @@ namespace DOTS.Boids.Jobs
     {
         [ReadOnly]
         public NativeArray<float3> Positions;
+        [ReadOnly] 
+        public NativeArray<float3> Velocities;
         [ReadOnly]
         public NativeParallelMultiHashMap<int, int> CellToBoid;
         [ReadOnly]
         public float CellSize;
-
         [ReadOnly]
         public MovementParameters MovementParameters;
         [ReadOnly]
         public FlockingParameters FlockingParameters;
 
         private const float Epsilon = 0.0001f;
-        private const int P1 = 73856093;
-        private const int P2 = 19349663;
-        private const int P3 = 83492791;
 
         public void Execute(
             in Boid tag,
@@ -34,16 +32,16 @@ namespace DOTS.Boids.Jobs
             in LocalTransform transform,
             in Velocity velocity)
         {
-            var acceleration = float3.zero;
             var position = transform.Position;
+            var acceleration = float3.zero;
 
             var cell = GetCell(position);
 
             var neighborsCount = 0;
-            var alignmentAverageVelocity = float3.zero;
-            var cohesionCenter = float3.zero;
-            var separationSteer = float3.zero;
-            var avoidCount = 0;
+            var alignmentSum = float3.zero;
+            var cohesionSum = float3.zero;
+            var separationSum = float3.zero;
+            var separationCount = 0;
 
             var perceptionRadius2 = FlockingParameters.PerceptionRadius * FlockingParameters.PerceptionRadius;
             var desiredSeparation2 = (FlockingParameters.PerceptionRadius * 0.5f);
@@ -53,30 +51,34 @@ namespace DOTS.Boids.Jobs
             for (var y = -1; y <= 1; y++)
             for (var z = -1; z <= 1; z++)
             {
-                var hash = HashCell(cell + new int3(x, y, z));
+                var hash = HashUtils.HashCellAbs(cell + new int3(x, y, z));
 
-                if (CellToBoid.TryGetFirstValue(hash, out int boidIndex, out var it))
+                if (CellToBoid.TryGetFirstValue(hash, out var boidIndex, out var it))
                 {
                     do
                     {
-                        if (boidIndex == self.Index)
-                            continue;
-                        
-                        var otherPos = Positions[boidIndex];
+                        if (boidIndex == self.Index) continue;
 
+                        var otherPos = Positions[boidIndex];
                         var diff = otherPos - position;
                         var dist2 = math.lengthsq(diff);
+
                         if (dist2 > perceptionRadius2) 
                             continue;
 
                         neighborsCount++;
-                        alignmentAverageVelocity += diff;
-                        cohesionCenter += otherPos;
+                        
+                        //Alignment
+                        alignmentSum += Velocities[boidIndex];
+                        
+                        //Cohesion
+                        cohesionSum += otherPos;
 
+                        //Separation
                         if (dist2 < desiredSeparation2)
                         {
-                            separationSteer += -diff / dist2;
-                            avoidCount++;
+                            separationSum += -diff / (dist2 + Epsilon);
+                            separationCount++;
                         }
 
                     } while (CellToBoid.TryGetNextValue(out boidIndex, ref it));
@@ -89,36 +91,31 @@ namespace DOTS.Boids.Jobs
                 return;
             }
 
-            // Alignment
-            alignmentAverageVelocity /= neighborsCount;
-            acceleration += ComputeAlignment(alignmentAverageVelocity, velocity.Value, MovementParameters.MaxSpeed)
+            //Alignment
+            alignmentSum /= neighborsCount;
+            acceleration += ComputeAlignment(alignmentSum, velocity.Value, MovementParameters.MaxSpeed)
                             * FlockingParameters.AlignmentWeight;
 
-            // Cohesion
-            cohesionCenter /= neighborsCount;
-            acceleration += ComputeCohesion(cohesionCenter, velocity.Value, position, MovementParameters.MaxSpeed)
+            //Cohesion
+            cohesionSum /= neighborsCount;
+            acceleration += ComputeCohesion(cohesionSum, velocity.Value, position, MovementParameters.MaxSpeed)
                             * FlockingParameters.CohesionWeight;
 
-            // Separation
-            if (avoidCount > 0)
+            //Separation
+            if (separationCount > 0)
             {
-                separationSteer /= avoidCount;
-                acceleration += ComputeSeparation(separationSteer, velocity.Value, MovementParameters.MaxSpeed)
+                separationSum /= separationCount;
+                acceleration += ComputeSeparation(separationSum, velocity.Value, MovementParameters.MaxSpeed)
                                 * FlockingParameters.SeparationWeight;
             }
 
-            acceleration = MathUtils.ClampMagnitude(acceleration, MovementParameters.MaxForce);
-            steeringAcceleration.Value = acceleration;
+            steeringAcceleration.Value =
+                MathUtils.ClampMagnitude(acceleration, MovementParameters.MaxForce);
         }
-
+        
         private int3 GetCell(float3 position)
         {
             return (int3)math.floor(position / CellSize);
-        }
-
-        private static int HashCell(int3 cell)
-        {
-            return math.abs(cell.x * P1 ^ cell.y * P2 ^ cell.z * P3);
         }
 
         private static float3 ComputeAlignment(float3 averageVelocity, float3 boidVelocity, float maxSpeed)

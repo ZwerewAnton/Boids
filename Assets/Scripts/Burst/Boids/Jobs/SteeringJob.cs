@@ -1,11 +1,11 @@
-using Boids.Struct;
+using Burst.Boids.Struct;
+using Common.Utils;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
-using Utils;
 
-namespace Boids.Jobs
+namespace Burst.Boids.Jobs
 {
     [BurstCompile(
         FloatMode = FloatMode.Fast,

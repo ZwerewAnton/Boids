@@ -1,6 +1,6 @@
 using Unity.Mathematics;
 
-namespace Utils
+namespace Common.Utils
 {
     public static class MathUtils
     {

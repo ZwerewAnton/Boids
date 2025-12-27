@@ -1,4 +1,4 @@
-namespace Boids.Struct
+namespace Burst.Boids.Struct
 {
     public struct FlockingParameters
     {

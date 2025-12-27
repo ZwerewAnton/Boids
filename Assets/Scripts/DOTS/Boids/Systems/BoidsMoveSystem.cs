@@ -1,8 +1,7 @@
-using DOTS.Boids.Components;
+using DOTS.Boids.Components.Parameters;
 using DOTS.Boids.Jobs;
 using Unity.Burst;
 using Unity.Entities;
-using UnityEngine;
 
 namespace DOTS.Boids.Systems
 {

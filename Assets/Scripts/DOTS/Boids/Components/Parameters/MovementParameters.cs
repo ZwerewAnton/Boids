@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace DOTS.Boids.Components
+namespace DOTS.Boids.Components.Parameters
 {
     public struct MovementParameters : IComponentData
     {

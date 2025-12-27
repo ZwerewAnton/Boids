@@ -1,6 +1,6 @@
 using Unity.Mathematics;
 
-namespace Boids.Struct
+namespace Burst.Boids.Struct
 {
     public struct BoundsParameters
     {

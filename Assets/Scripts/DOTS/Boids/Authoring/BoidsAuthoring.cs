@@ -1,4 +1,5 @@
 using DOTS.Boids.Components;
+using DOTS.Boids.Components.Parameters;
 using Unity.Entities;
 using UnityEngine;
 
