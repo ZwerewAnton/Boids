@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boids.BoidsSimulation
   boidPrefab: {fileID: 8345219920435665712, guid: 952ca48cbc7905447857bf6db86578d3, type: 3}
-  numberOfBoids: 100
+  count: 1000
   spawnBounds: {x: 20, y: 5, z: 20}
   neighborRadius: 3
   cohesionWeight: 1

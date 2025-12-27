@@ -24,17 +24,25 @@ namespace Boids.Jobs
         {
             var center = BoundsParameters.BoundsCenter;
             var radius = BoundsParameters.BoundsRadius;
+            
             var position = Positions[index];
-
             var offset = position - center;
+            
             var distanceSq = math.lengthsq(offset);
             var limitSq = radius * radius * 0.9f * 0.9f;
+            
             var steer = float3.zero;
+            
             if (distanceSq > limitSq)
             {
-                var desired = math.normalizesafe(center - position) * MaxSpeed;
-                steer = (desired - Velocities[index]) * BoundsParameters.BoundsAvoidanceWeight;
+                var desired = 
+                    math.normalizesafe(center - position) * MaxSpeed;
+                
+                steer = 
+                    (desired - Velocities[index])
+                    * BoundsParameters.BoundsAvoidanceWeight;
             }
+            
             BoundsAccelerations[index] = steer;
         }
     }

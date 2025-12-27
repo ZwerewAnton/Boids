@@ -15,7 +15,7 @@ namespace Boids
         [SerializeField]
         private GameObject boidPrefab;
         [SerializeField]
-        private int numberOfBoids = 100;
+        private int count = 100;
         [SerializeField]
         private Vector3 spawnBounds = new(20, 5, 20);
 
@@ -88,8 +88,8 @@ namespace Boids
                 DeltaTime = deltaTime
             };
 
-            var boundsHandle = boundsJob.Schedule(numberOfBoids, 0);
-            var steeringHandle = steeringJob.Schedule(numberOfBoids, 0);
+            var boundsHandle = boundsJob.Schedule(count, 0);
+            var steeringHandle = steeringJob.Schedule(count, 0);
             var combined = JobHandle.CombineDependencies(boundsHandle, steeringHandle);
             var moveHandle = moveJob.Schedule(_transformAccessArray, combined);
             moveHandle.Complete();
@@ -102,9 +102,9 @@ namespace Boids
                 Destroy(transform.GetChild(i).gameObject);
             }
 
-            var transforms = new Transform[numberOfBoids];
+            var transforms = new Transform[count];
 
-            for (var i = 0; i < numberOfBoids; i++)
+            for (var i = 0; i < count; i++)
             {
                 var position = transform.position + new Vector3(
                     Random.Range(-spawnBounds.x, spawnBounds.x),
@@ -120,10 +120,10 @@ namespace Boids
 
         private void InitializeDataStructs(Transform[] transforms)
         {
-            _positions = new NativeArray<float3>(numberOfBoids, Allocator.Persistent);
-            _velocities = new NativeArray<float3>(numberOfBoids, Allocator.Persistent);
-            _boundsAccelerations = new NativeArray<float3>(numberOfBoids, Allocator.Persistent);
-            _steeringAccelerations = new NativeArray<float3>(numberOfBoids, Allocator.Persistent);
+            _positions = new NativeArray<float3>(count, Allocator.Persistent);
+            _velocities = new NativeArray<float3>(count, Allocator.Persistent);
+            _boundsAccelerations = new NativeArray<float3>(count, Allocator.Persistent);
+            _steeringAccelerations = new NativeArray<float3>(count, Allocator.Persistent);
             _transformAccessArray = new TransformAccessArray(transforms);
 
             _boundsParameters = new BoundsParameters
@@ -140,7 +140,7 @@ namespace Boids
                 SeparationWeight = separationWeight
             };
             
-            for (var i = 0; i < numberOfBoids; i++)
+            for (var i = 0; i < count; i++)
             {
                 _velocities[i] = Random.insideUnitSphere.normalized * (maxSpeed * 0.5f);
                 _positions[i] = transforms[i].position;
