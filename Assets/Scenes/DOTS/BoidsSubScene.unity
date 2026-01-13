@@ -165,16 +165,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DOTS.Boids.Authoring.BoidsSpawnerAuthoring
   boidPrefab: {fileID: 8345219920435665712, guid: 952ca48cbc7905447857bf6db86578d3, type: 3}
   count: 1000
-  spawnRadius: 20
+  spawnRadius: 30
   neighborRadius: 3
   cohesionWeight: 1
   alignmentWeight: 1
-  separationWeight: 1.5
+  separationWeight: 5
   maxSpeed: 5
   maxForce: 5
   boundsCenter: {x: 0, y: 0, z: 0}
   boundsRadius: 30
-  boundsAvoidanceWeight: 10
+  boundsAvoidanceWeight: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
