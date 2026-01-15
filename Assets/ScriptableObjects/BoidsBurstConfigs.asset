@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ca06a0bb56e41b8a63ba23ea15ebe50, type: 3}
+  m_Name: BoidsBurstConfigs
+  m_EditorClassIdentifier: Assembly-CSharp::Burst.Boids.Configs.BoidsConfigs
+  boidPrefab: {fileID: 8345219920435665712, guid: 952ca48cbc7905447857bf6db86578d3, type: 3}
+  count: 5000
+  spawnRadius: 30
+  neighborRadius: 3
+  cohesionWeight: 1
+  alignmentWeight: 1
+  separationWeight: 1.5
+  maxSpeed: 5
+  maxForce: 5
+  boundsRadius: 30
+  boundsAvoidanceWeight: 5

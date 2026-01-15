@@ -1,3 +1,4 @@
+using Burst.Boids.Configs;
 using Burst.Boids.Jobs;
 using Burst.Boids.Struct;
 using Unity.Collections;
@@ -11,36 +12,9 @@ namespace Burst.Boids
 {
     public class BoidsSimulation : MonoBehaviour
     {
-        [Header("Prefabs & Spawn")]
         [SerializeField]
-        private GameObject boidPrefab;
-        [SerializeField]
-        private int count = 100;
-        [SerializeField]
-        private Vector3 spawnBounds = new(20, 5, 20);
-
-        [Header("Global flocking parameters")]
-        [SerializeField]
-        private float neighborRadius = 3f;
-        [SerializeField, Range(0f, 5f)]
-        private float cohesionWeight = 1f;
-        [SerializeField, Range(0f, 5f)]
-        private float alignmentWeight = 1f;
-        [SerializeField, Range(0f, 5f)]
-        private float separationWeight = 1.5f;
-
-        [Header("Motion limits")]
-        [SerializeField]
-        private float maxSpeed = 5f;
-        [SerializeField]
-        private float maxForce = 5f;
-
-        [Header("Bounds")]
-        [SerializeField]
-        private float boundsRadius = 30f;
-        [SerializeField]
-        private float boundsAvoidanceWeight = 10f;
-
+        private BoidsConfigs boidsConfigs;
+        
         private BoundsParameters _boundsParameters;
         private FlockingParameters _flockingParameters;
         
@@ -66,14 +40,14 @@ namespace Burst.Boids
                 BoundsParameters = _boundsParameters,
                 Positions = _positions,
                 Velocities = _velocities,
-                MaxSpeed = maxSpeed
+                MaxSpeed = boidsConfigs.maxSpeed
             };
             var steeringJob = new SteeringJob
             {
                 Positions = _positions,
                 Velocities = _velocities,
-                MaxSpeed = maxSpeed,
-                MaxForce = maxForce,
+                MaxSpeed = boidsConfigs.maxSpeed,
+                MaxForce = boidsConfigs.maxForce,
                 FlockingParameters = _flockingParameters,
                 SteeringAccelerations = _steeringAccelerations
             };
@@ -83,13 +57,13 @@ namespace Burst.Boids
                 SteeringAccelerations = _steeringAccelerations,
                 Velocities = _velocities,
                 Positions = _positions,
-                MaxSpeed = maxSpeed,
-                MaxForce = maxForce,
+                MaxSpeed = boidsConfigs.maxSpeed,
+                MaxForce = boidsConfigs.maxForce,
                 DeltaTime = deltaTime
             };
 
-            var boundsHandle = boundsJob.Schedule(count, 0);
-            var steeringHandle = steeringJob.Schedule(count, 0);
+            var boundsHandle = boundsJob.Schedule(boidsConfigs.count, 0);
+            var steeringHandle = steeringJob.Schedule(boidsConfigs.count, 0);
             var combined = JobHandle.CombineDependencies(boundsHandle, steeringHandle);
             var moveHandle = moveJob.Schedule(_transformAccessArray, combined);
             moveHandle.Complete();
@@ -102,17 +76,13 @@ namespace Burst.Boids
                 Destroy(transform.GetChild(i).gameObject);
             }
 
-            var transforms = new Transform[count];
+            var transforms = new Transform[boidsConfigs.count];
 
-            for (var i = 0; i < count; i++)
+            for (var i = 0; i < boidsConfigs.count; i++)
             {
-                var position = transform.position + new Vector3(
-                    Random.Range(-spawnBounds.x, spawnBounds.x),
-                    Random.Range(-spawnBounds.y, spawnBounds.y),
-                    Random.Range(-spawnBounds.z, spawnBounds.z)
-                );
+                var position = transform.position + Random.insideUnitSphere * boidsConfigs.spawnRadius;
 
-                transforms[i] = Instantiate(boidPrefab, position, Quaternion.identity, transform).transform;
+                transforms[i] = Instantiate(boidsConfigs.boidPrefab, position, Quaternion.identity, transform).transform;
             }
 
             return transforms;
@@ -120,6 +90,7 @@ namespace Burst.Boids
 
         private void InitializeDataStructs(Transform[] transforms)
         {
+            var count = boidsConfigs.count;
             _positions = new NativeArray<float3>(count, Allocator.Persistent);
             _velocities = new NativeArray<float3>(count, Allocator.Persistent);
             _boundsAccelerations = new NativeArray<float3>(count, Allocator.Persistent);
@@ -129,20 +100,20 @@ namespace Burst.Boids
             _boundsParameters = new BoundsParameters
             {
                 BoundsCenter = transform.position,
-                BoundsRadius = boundsRadius,
-                BoundsAvoidanceWeight = boundsAvoidanceWeight
+                BoundsRadius = boidsConfigs.boundsRadius,
+                BoundsAvoidanceWeight = boidsConfigs.boundsAvoidanceWeight
             };
             _flockingParameters = new FlockingParameters
             {
-                PerceptionRadius = neighborRadius,
-                AlignmentWeight = alignmentWeight,
-                CohesionWeight = cohesionWeight,
-                SeparationWeight = separationWeight
+                PerceptionRadius = boidsConfigs.neighborRadius,
+                AlignmentWeight = boidsConfigs.alignmentWeight,
+                CohesionWeight = boidsConfigs.cohesionWeight,
+                SeparationWeight = boidsConfigs.separationWeight
             };
             
             for (var i = 0; i < count; i++)
             {
-                _velocities[i] = Random.insideUnitSphere.normalized * (maxSpeed * 0.5f);
+                _velocities[i] = Random.insideUnitSphere.normalized * (boidsConfigs.maxSpeed * 0.5f);
                 _positions[i] = transforms[i].position;
             }
         }

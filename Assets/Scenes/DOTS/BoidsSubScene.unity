@@ -163,18 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f22a62d229c74b5e832b44b57dff586f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DOTS.Boids.Authoring.BoidsSpawnerAuthoring
-  boidPrefab: {fileID: 8345219920435665712, guid: 952ca48cbc7905447857bf6db86578d3, type: 3}
-  count: 1000
-  spawnRadius: 30
-  neighborRadius: 3
-  cohesionWeight: 1
-  alignmentWeight: 1
-  separationWeight: 5
-  maxSpeed: 5
-  maxForce: 5
-  boundsCenter: {x: 0, y: 0, z: 0}
-  boundsRadius: 30
-  boundsAvoidanceWeight: 5
+  boidsConfigs: {fileID: 11400000, guid: 8700ae8c279de8740ba3b4e4b3b191b5, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: CameraConfigs
   m_EditorClassIdentifier: Assembly-CSharp::Common.Configs.CameraConfigs
   startRotation: {x: 0, y: 0, z: 0, w: 0}
-  distance: 40
+  distance: 60
   minDistance: 30
-  maxDistance: 50
+  maxDistance: 70
   xSpeed: 15
   ySpeed: 15
-  zoomSpeed: 100
+  zoomSpeed: 0.1
   mouseSmooth: 10
-  zoomSmooth: 5
+  zoomSmooth: 10

@@ -82,6 +82,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _1: -2.87
+    - _2: 4
+    - _3: 1
+    - _4: 5.34
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
@@ -89,6 +93,9 @@ Material:
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BlendOp: 0
+    - _BorderNoiseScale: 3.54
+    - _BorderNoiseSpeed: 1
+    - _BorderNoiseStrength: 1
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
@@ -96,15 +103,19 @@ Material:
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
+    - _DetailScale: 4
+    - _DetailStrenth: 0.2
     - _DstBlend: 10
     - _DstBlendAlpha: 10
     - _EnvironmentReflections: 1
+    - _FresnelPower: 2
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _LowNoiseScale: 12
     - _Metallic: 0
     - _MidNoiseScale: 6
+    - _NoiseOffset: -0.5
     - _NoiseScale: 50
     - _OcclusionStrength: 1
     - _Parallax: 0.005
@@ -120,15 +131,19 @@ Material:
     - _SrcBlend: 5
     - _SrcBlendAlpha: 1
     - _Surface: 1
-    - _TimeScale: 1
+    - _TimeScale: 0.02
     - _WorkflowMode: 1
     - _XRMotionVectorsPass: 1
     - _ZWrite: 0
+    - _alpha: 3.5
+    - _fadestart: 29.3
+    - _sphereradius: 60
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BorderColor: {r: 0, g: 0, b: 2.9960783, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Color_A: {r: 0.06980536, g: 0.042808827, b: 0.24528301, a: 1}
-    - _Color_B: {r: 0.2190615, g: 0.05549128, b: 0.2735849, a: 1}
+    - _Color_A: {r: 0.038031094, g: 0.016064432, b: 0.1792453, a: 1}
+    - _Color_B: {r: 0.23072045, g: 0.04552332, b: 0.2924528, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
